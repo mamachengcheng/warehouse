@@ -1,0 +1,139 @@
+{% extends "warehouse_template.html" %}
+{% block title %}客户公司管理-{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">公司列表</h3>
+                </div>
+                {% if messages %}
+
+                <div id="messages" class="messages">
+                    <div class="alert alert-success">
+                    {% for message in messages %}
+                    <div{% if message.tag %} class="{{ message.tags }}"{% endif %} >{{ message }}</div>
+                    {% endfor %}
+                    </div>
+                </div>
+
+                    <script>
+                    setTimeout(
+                        function(){
+                            document.getElementById("messages").style.display="none";
+                            },3000)
+                    </script>
+                {% endif %}
+                <div class="panel-body">
+                    <form action="{% url 'company_edit' id=0 %}" method="get">
+                    <button class="btn btn-primary" type="submit" style="margin-bottom:10px; ">新建公司</button>
+                    </form>
+                    <table width="100%" class="table table-striped table-hover" id="dataTables-example">
+                        <thead>
+                            <tr>
+                                <td>公司名称</td>
+                                <td>公司地址</td>
+                                <td>联系人</td>
+                                <td>联系方式</td>
+                                <td>客户等级</td>
+                                <td>操作</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in companys %}
+                            <tr class="odd gradeX">
+                                    <td>{{ item.name }}</td>
+                                    <td>{{ item.address }}</td>
+                                    <td>{{ item.contacts }}</td>
+                                    <td>{{ item.contacts_phone }}</td>
+                                    <td>{{ item.level }}</td>
+                                    <td class="center">
+                                        <span style="display: flex;flex-direction: row;">
+                                            <form action="{% url 'company_edit' id=item.id %}" method="get">
+                                            <button type="submit" class="btn btn-primary btn-xs" name='edit' value="edit">编辑</button>
+                                            </form>
+
+                                             <button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal{{ item.id }}" style="margin-right: 5px;">删除</button>
+                                        <!-- Modal -->
+                                            <div class="modal fade" id="myModal{{ item.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                     <div class="modal-header">
+                                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                        <h4 class="modal-title" id="myModalLabel">删除公司</h4>
+                                                     </div>
+                                                    <div class="modal-body">
+                                                        <p>确定要删除该公司么？</p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <span style="display: flex;flex-direction: row;">
+                                                        <button type="button" class="btn btn-default" data-dismiss="modal" style="margin-right: 10px;">取消</button>
+                                                        <form action="{% url 'company_del' id=item.id %}" method="post">{% csrf_token %}
+                                                        <input type="submit" class="btn btn-primary" style="margin-right: 10px;" value="确认删除">
+                                                        </form>
+                                                        </span>
+                                                    </div>
+                                                    </div>
+                                                <!-- /.modal-content -->
+                                                </div>
+                                            <!-- /.modal-dialog -->
+                                            </div>
+                                            <!-- /.modal -->
+
+{#                                            <form action="{% url 'account_list' %}" method="get">#}
+{#                                            <input type="hidden" name="check_company_member" value="{{ item.id }}">#}
+{#                                            <button type="submit" class="btn btn-primary btn-xs" >公司成员</button>#}
+{#                                            </form>#}
+
+                                        </span>
+                                    </td>
+
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-footer">
+                    客户公司列表，可对列表中显示的内容进行操作
+                </div>
+            </div>
+        </div>
+    </div>
+     <div class="row">
+        <div class="col-lg-8">
+            {% include "record_template.html" %}
+        </div>
+        <div class="col-lg-4">
+            <div class="panel panel-info">
+                <div class="panel-heading">操作说明</div>
+                <div class="panel-body">
+                    <p class="lead">客户公司相关操作说明</p>
+                    <p>标签：初始化、唯一、非联级删除、仓库管理员可用。</p>
+                    <p>id仅为数据库记录号，没有实际意义，可以忽略不显示，主要为对应操作记录。</p>
+                    <p>公司是系统运行需要初始配置的项目，先创建客户公司，再为其创建管理员账户。</p>
+                </div>
+            </div>
+        </div>
+     </div>
+{% endblock %}
+{% block sc %}
+    <script>
+    $(document).ready(function() {
+        $('#dataTables-example').DataTable({
+            "language":{
+                "lengthMenu":"每页 _MENU_ 条记录",
+                "zeroRecords":"没有找到符合条件的记录",
+                "info":"第 _PAGE_ 页（ 总共 _PAGES_ 页）",
+                "infoEmpty":"无记录",
+                "infoFiltered":"（从 _MAX_ 条记录过滤）",
+                "search":"搜索",
+                "paginate":{
+                    "previous":"上一页",
+                    "next":"下一页"
+                }
+            },
+            responsive: true,
+        });
+    });
+    </script>
+{% endblock %}

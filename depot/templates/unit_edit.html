@@ -1,0 +1,25 @@
+{% extends "warehouse_template.html" %}
+{% load crispy_forms_tags %}
+{% block title %}编辑库位信息-{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">库位信息编辑</h3>
+                </div>
+                <div class="panel-body">
+                    <form method="post" action="{% url 'unit_edit' id=id %}" role="form">
+                        <div class="form-group">
+                            <input type="hidden" name="id" id="id_id" value="{{ id }}">
+                        </div>
+                        {{ form | crispy }}
+                        <button class="btn btn-default" type="submit">提交</button>
+                        {% csrf_token %}
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

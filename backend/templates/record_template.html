@@ -1,0 +1,38 @@
+
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            近期操作记录
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>操作员</th>
+                                            <th>行动</th>
+                                            <th>描述</th>
+                                            <th>对象</th>
+                                            <th>对象描述</th>
+                                            <th>操作时间</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for record in op %}
+                                        <tr class="{% if record.action == '1' %}success{% elif record.action == '2' %}danger{% elif record.action == '3' %}info{% endif %}">
+                                            <td>{{ record.account }}</td>
+                                            <td>{{ record.get_action_display }}</td>
+                                            <td>{{ record.description }}</td>
+                                            <td>{{ record.object_id }}</td>
+                                            <td>{{ record.object_repr }}</td>
+                                            <td>{{ record.action_time }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- /.table-responsive -->
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->

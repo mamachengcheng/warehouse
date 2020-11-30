@@ -1,0 +1,20 @@
+{% extends "warehouse_template.html" %}
+{% load crispy_forms_tags %}
+{% block title %}创建费用规则{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">创建费用规则</h3>
+                </div>
+                <div class="panel-body">
+                    <form method="post" action="{% url 'storagefee_create' %}" role="form">{% csrf_token %}
+                        {{ form | crispy }}
+                        <button class="btn btn-default" type="submit">提交</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

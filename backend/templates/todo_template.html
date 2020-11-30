@@ -1,0 +1,28 @@
+
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            待办任务
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <p class="help-block">当前事务情况如下，可以点击数字前往对应的列表：</p>
+                            {% if user.is_staff %}
+                                <p>1.共有<a href="{% url 'sku_list' %}">{{ todo.skus_sum | default:0 }}</a>个SKU，其中{{ todo.skus_check_sum | default:0 }}个等待审核</p>
+                                <p>2.共有<a href="{% url 'transorder_check_list' %}">{{ todo.trans | default:0 }}</a>个到货预报运单，其中{{ todo.trans_to_submit | default:0 }}个等待验收</p>
+                                <p>3.共有<a href="{% url 'order_list_todo' %}">{{ todo.orders | default:0 }}</a>个订单，其中{{ todo.orders_to_check | default:0 }}个待处理，
+                                    {{ todo.orders_to_out | default:0 }}个待出库，{{ todo.orders_over | default:0 }}个待完结</p>
+                                <p>4.共有<a href="{% url 'reject_list' %}">{{ todo.rejects | default:0 }}</a>个退件单，其中{{ todo.rejects_todo | default:0 }}个尚需处理。</p>
+                            {% else %}
+                                <p>1.共有<a href="{% url 'sku_list' %}">{{ todo.skus_sum | default:0 }}</a>个SKU，其中{{ todo.skus_check_sum | default:0 }}个等待审核</p>
+                                <p>2.共有<a href="{% url 'transorder_list' %}">{{ todo.trans | default:0 }}</a>个到货预报运单，其中{{ todo.trans_to_submit | default:0 }}个等待审核</p>
+                                <p>3.共有<a href="{% url 'order_list' %}">{{ todo.orders | default:0 }}</a>个订单，其中{{ todo.orders_to_submit | default:0 }}个待提交，
+                                    {{ todo.orders_problem | default:0 }}个问题单</p>
+                                <p>4.共有<a href="{% url 'reject_list' %}">{{ todo.rejects | default:0 }}</a>个退件单，其中{{ todo.rejects_todo | default:0 }}个尚需处理。</p>
+                                <p class="help-block">快捷链接：</p>
+                                <p><a href="{% url 'sku_create' %}">新建SKU</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url 'transorder_create' %}">新建到货预报</a></p>
+                                <p><a href="{% url 'order_create' %}">手工录入订单</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url 'order_import' %}">从Excel文件导入订单</a></p>
+                            {% endif %}
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>雷欧海外仓</title>
+    {% load staticfiles %}
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'modern-business/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'modern-business/css/modern-business.css' %}" rel="stylesheet">
+
+  </head>
+
+  <body>
+
+    <!-- Navigation -->
+    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="{% url 'index' %}">雷欧海外仓</a>
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="#about">关于我们</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#product">产品和服务</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#contact">联系我们</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'backend:index' %}">登录管理平台</a>
+            </li>
+{#            <li class="nav-item dropdown">#}
+{#              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownPortfolio" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">#}
+{#                Portfolio#}
+{#              </a>#}
+{#              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownPortfolio">#}
+{#                <a class="dropdown-item" href="portfolio-1-col.html">1 Column Portfolio</a>#}
+{#                <a class="dropdown-item" href="portfolio-2-col.html">2 Column Portfolio</a>#}
+{#                <a class="dropdown-item" href="portfolio-3-col.html">3 Column Portfolio</a>#}
+{#                <a class="dropdown-item" href="portfolio-4-col.html">4 Column Portfolio</a>#}
+{#                <a class="dropdown-item" href="portfolio-item.html">Single Portfolio Item</a>#}
+{#              </div>#}
+{#            </li>#}
+{#            <li class="nav-item dropdown">#}
+{#              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownBlog" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">#}
+{#                Blog#}
+{#              </a>#}
+{#              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownBlog">#}
+{#                <a class="dropdown-item" href="blog-home-1.html">Blog Home 1</a>#}
+{#                <a class="dropdown-item" href="blog-home-2.html">Blog Home 2</a>#}
+{#                <a class="dropdown-item" href="blog-post.html">Blog Post</a>#}
+{#              </div>#}
+{#            </li>#}
+{#            <li class="nav-item dropdown">#}
+{#              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownBlog" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">#}
+{#                Other Pages#}
+{#              </a>#}
+{#              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownBlog">#}
+{#                <a class="dropdown-item" href="full-width.html">Full Width Page</a>#}
+{#                <a class="dropdown-item" href="sidebar.html">Sidebar Page</a>#}
+{#                <a class="dropdown-item" href="faq.html">FAQ</a>#}
+{#                <a class="dropdown-item" href="404.html">404</a>#}
+{#                <a class="dropdown-item" href="pricing.html">Pricing Table</a>#}
+{#              </div>#}
+{#            </li>#}
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <header>
+      <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+        <ol class="carousel-indicators">
+          <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+          <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+          <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+        </ol>
+        <div class="carousel-inner" role="listbox">
+          <!-- Slide One - Set the background image for this slide in the line below -->
+          <div class="carousel-item active" style="background-image:url('{% static 'modern-business/img/11.jpg' %}')">
+            <div class="carousel-caption d-none d-md-block">
+              <h3>提供头程物流解决方案并支持自主头程</h3>
+              <p>整合空运，海运及铁路运输优势资源</p>
+            </div>
+          </div>
+          <!-- Slide Two - Set the background image for this slide in the line below -->
+          <div class="carousel-item" style="background-image:url('{% static 'modern-business/img/22.jpg' %}')">
+            <div class="carousel-caption d-none d-md-block">
+              <h3>本地派送最优时效保证</h3>
+              <p>便捷、专业的整合本地各项物流服务，无缝衔接</p>
+            </div>
+          </div>
+          <!-- Slide Three - Set the background image for this slide in the line below -->
+          <div class="carousel-item" style="background-image:url('{% static 'modern-business/img/33.jpg' %}')">
+            <div class="carousel-caption d-none d-md-block">
+              <h3>特色增值服务</h3>
+              <p>电子产品检修、目标市场国本土客服、海外法律团队</p>
+            </div>
+          </div>
+        </div>
+        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="sr-only">上一个</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="sr-only">下一个</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <div class="container">
+
+      <h1 class="my-4">欢迎您来到雷欧海外仓管理平台！</h1>
+
+      <!-- Marketing Icons Section -->
+      <div class="row">
+        <div class="col-lg-4 mb-4">
+          <div class="card h-100">
+            <h4 class="card-header">速度优势</h4>
+            <div class="card-body">
+              <p class="card-text">新订单闪电响应速度，多渠道物流派送，范围覆盖欧洲，时效最优保证</p>
+            </div>
+{#            <div class="card-footer">#}
+{#              <a href="#" class="btn btn-primary">了解更多</a>#}
+{#            </div>#}
+          </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+          <div class="card h-100">
+            <h4 class="card-header">服务优势</h4>
+            <div class="card-body">
+              <p class="card-text">客服售后本地化，提供多语种一对一服务，海外法律团队保障卖家利益最大化</p>
+            </div>
+{#            <div class="card-footer">#}
+{#              <a href="#" class="btn btn-primary">了解更多</a>#}
+{#            </div>#}
+          </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+          <div class="card h-100">
+            <h4 class="card-header">价格优势</h4>
+            <div class="card-body">
+              <p class="card-text">最优惠的价格拥有最完善的服务，完美解决海外仓储派送与售后技术支持</p>
+            </div>
+{#            <div class="card-footer">#}
+{#              <a href="#" class="btn btn-primary">了解更多</a>#}
+{#            </div>#}
+          </div>
+        </div>
+      </div>
+      <!-- /.row -->
+
+      <!-- Portfolio Section -->
+      <h2>服务及产品说明</h2>
+
+      <div class="row">
+        <div class="col-lg-4 col-sm-6 portfolio-item">
+          <div class="card h-100">
+            <a href="#"><img class="card-img-top"  style="padding: 80px;"  src="{% static 'modern-business/img/6-1.png' %}" alt=""></a>
+            <div class="card-body">
+              <h4 class="card-title">
+                <a href="#" name="product">系统平台</a>
+              </h4>
+              <p class="card-text">便利的信息查询与分析，支持使用者通过多种方式建立订单（单个手动录入创建、表格Excel批量导入创建），对异常订单更有贴心提示，各种明细和详细数据全部可随时导出，帮助您轻松高效的管理您的海外商品。
+</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-sm-6 portfolio-item">
+          <div class="card h-100">
+            <a href="#"><img class="card-img-top"  style="padding: 80px;"  src="{% static 'modern-business/img/6-2.png' %}" alt=""></a>
+            <div class="card-body">
+              <h4 class="card-title">
+                <a href="#">客服团队</a>
+              </h4>
+              <p class="card-text">为卖家提供中文、法语与英文一对一客服，必要时可按需与海外客户直接进行沟通，帮您迅速准确地获得信息与解决问题。拥有具备法国与欧洲法律与税务领域专业团队，提供相关必要的咨询与建议。</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-sm-6 portfolio-item">
+          <div class="card h-100">
+            <a href="#"><img class="card-img-top"  style="padding: 80px;"  src="{% static 'modern-business/img/6-3.png' %}" alt=""></a>
+            <div class="card-body">
+              <h4 class="card-title">
+                <a href="#">安全仓储</a>
+              </h4>
+              <p class="card-text">雷欧海外仓，让仓储费用不再成为卖家的负担。超大的仓储空间与灵活的仓储费用计算措施相结合，可以让您的仓储费用最低至0。新用户更可享受超长周期的免费仓储，帮助卖家轻松起步。</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-sm-6 portfolio-item">
+          <div class="card h-100">
+            <a href="#"><img class="card-img-top" style="padding: 80px;"  src="{% static 'modern-business/img/6-4.png' %}" alt=""></a>
+            <div class="card-body">
+              <h4 class="card-title">
+                <a href="#">换标转仓</a>
+              </h4>
+              <p class="card-text">为FBA、FBC等平台卖家、账号提供退货换标与转仓等服务。我们帮助客户接收和存放被封、被下架的货品以及因各类原因造成的问题货品。按照客户要求更换、更新退货货品标签以及更换货品包装。按需质检、打包、发送，使货物快速重新进入销售环节。</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-sm-6 portfolio-item">
+          <div class="card h-100">
+            <a href="#"><img class="card-img-top" style="padding: 80px;"  src="{% static 'modern-business/img/6-5.png' %}" alt=""></a>
+            <div class="card-body">
+              <h4 class="card-title">
+                <a href="#">无忧售后</a>
+              </h4>
+              <p class="card-text">不同于一般平台仓库的退货检查服务，我们更注重保障卖家利益。提供最为全面的售后退换货服务，包括检查评估、质检与维修，提高顾客满意度也为卖家避免不必要的损失。提供国际物流与通关服务，满足海外商品批量退回生产厂家与供应商。
+</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-sm-6 portfolio-item">
+          <div class="card h-100">
+            <a href="#"><img class="card-img-top" style="padding: 80px;" src="{% static 'modern-business/img/6-6.png' %}" alt=""></a>
+            <div class="card-body">
+              <h4 class="card-title">
+                <a href="#">增值服务</a>
+              </h4>
+              <p class="card-text">雷欧海外仓的工作团队拥有欧洲本土的法律专业人员，在跨境电商贸易与海外仓业务经常涉及的商法，税法，知识产权法等领域具有多年工作经验。可为客户提供VAT税号申请服务，商标注册服务，以及其他与业务相关的当地法律法规和政策的咨询。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /.row -->
+
+      <!-- Features Section -->
+      <div class="row">
+        <div class="col-lg-6">
+          <h2>公司介绍</h2><a href="#" name="about"></a>
+          <p>雷欧法国海外仓位于法国第四大城市：里尔（LILLE），处在著名的欧洲中心一小时经济圈之内，即1小时可达英国首都伦敦和比利时首都布鲁塞尔与法国首都巴黎。</p>
+            <p>雷欧法国海外仓由法国ELODES有限责任公司（SARL ELODES）负责运营，公司其他部门同时也负责欧中货物贸易，包含采购，国际物流运输通关并提供相关商业法律建议咨询等，促进中欧双向的沟通与贸易的发展。</p>
+{#          <ul>#}
+{#            <li>速度快</li>#}
+{#            <li>24小时响应</li>#}
+{#            <li>最优惠的价格</li>#}
+{#            <li>覆盖法国全境</li>#}
+{#            <li>双语支持</li>#}
+{#          </ul>#}
+{#          <p>其他相关内容说明，可以包含多一些内容，大致排版效果是这样。</p>#}
+        </div>
+        <div class="col-lg-6">
+          <img class="img-fluid rounded" src="{% static 'modern-business/img/7-1.png' %}" alt="">
+        </div>
+      </div>
+      <!-- /.row -->
+
+      <hr>
+
+      <!-- Call to Action Section -->
+      <div class="row mb-4">
+        <div class="col-md-8">
+            <a href="#" name="contact"></a>
+          <p>联系方式：<a href="mailto:elodes2009@hotmail.com">elodes2009@hotmail.com</a>&nbsp;&nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;客服QQ：1337152593</p>
+        </div>
+{#        <div class="col-md-4">#}
+{#          <a class="btn btn-lg btn-secondary btn-block" href="#">联系我们</a>#}
+{#        </div>#}
+      </div>
+
+    </div>
+    <!-- /.container -->
+
+    <!-- Footer -->
+    <footer class="py-5 bg-dark">
+      <div class="container">
+        <p class="m-0 text-center text-white">Copyright &copy;2017 雷欧elodes</p>
+      </div>
+      <!-- /.container -->
+    </footer>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="{% static 'modern-business/vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'modern-business/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script>
+        $(function () {
+            $("#carouselExampleIndicators").carousel({
+                interval:3000
+            });
+        })
+    </script>
+  </body>
+
+</html>

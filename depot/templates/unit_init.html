@@ -1,0 +1,56 @@
+{% extends "warehouse_template.html" %}
+{% load staticfiles %}
+{% block title %}库位初始化-{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">库位初始化</h3>
+                </div>
+                {% if messages %}
+                <div id="messages" class="messages">
+                    <div class="alert alert-danger">
+                    {% for message in messages %}
+                    <div{% if message.tag %} class="{{ message.tags }}"{% endif %} >{{ message }}</div>
+                    {% endfor %}
+                    </div>
+                </div>
+                    <script>
+                    setTimeout(
+                        function(){
+                            document.getElementById("messages").style.display="none";
+                            },3000)
+                    </script>
+                {% endif %}
+                <div class="panel-body">
+                    <div>初始化规则,第一位大写字母ABCDEFGHIJKLMN，第二位数字12345，第三位小写字母abcde，共自动生成350个库位。</div>
+                    <div>会消耗一点时间，请耐心等待。</div>
+                    <div>如初始化错误，可直接删除对应的仓库，该仓库所包含的所有库位也会被自动删除。</div>
+                    <div>请确保初始化库位在系统正式运行之前操作。</div>
+                    <form method="post" action="{% url 'unit_init' %}" role="form">
+                        <div class="form-group">
+                            <input type="hidden" name="id" id="id_id" value="{{ id }}">
+                        </div>
+                        {% for field in form %}
+                            <div class="form-group">
+                                {% if field.errors %}
+                                    {% for error in field.errors %}
+                                        <div class="alert alert-danger">{{ error }}</div>
+                                    {% endfor %}
+                                {% endif %}
+                                {{ field.label_tag }} {{ field }}
+                                {% if field.help_text %}
+                                <p class="help-block">{{ field.help_text|safe }}</p>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        <button class="btn btn-default" type="submit">提交</button>
+                        {% csrf_token %}
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

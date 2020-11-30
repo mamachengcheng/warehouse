@@ -1,0 +1,167 @@
+{% extends "warehouse_template.html" %}
+{% load staticfiles %}
+{% block title %}查看已完结的预报运单-{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">完结运单查看</h3>
+                </div>
+                <div class="panel-body">
+                <p>
+{#                    <form action="{% url 'transorder_list_company' %}" method="get">#}
+{#                        <input type="hidden" name="company" value="{{ back }}">#}
+{#                        <input type="submit" class="btn btn-primary" value="返回">#}
+{#                    </form>#}
+                    </p>
+                        <div>运单所属公司：{{ data.company }}</div>
+                        <div>预计到达时间：{{ data.date_arrive }}</div>
+                        <div>运单状态：{{ data.get_status_trans_display }}</div>
+                        <div>目标仓库：{{ data.depot }}</div>
+                        <div>运输公司：{{ data.transport_firm }}</div>
+                        <div>货运单号：{{ data.transport_code }}</div>
+                        <div>货物总估值：{{ data.value_all }}</div>
+                        <div>运单备注：{{ data.remark }}</div>
+                        <div>验收说明：{{ data.check }}</div>
+                        <div>验收时间：{{ data.date_check }}</div>
+                        <div>运单包含的货物清单：</div>
+                        <table class="table">
+                        <thead>
+                        <tr>
+                            <td>序号</td>
+                            <td>SKU名称</td>
+                            <td>SKU代码</td>
+                            <td>SKU重量</td>
+                            <td>SKU体积</td>
+                            <td>预报到货数量</td>
+                            <td>核对数量</td>
+                            <td>分配库位</td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in pre_data %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ item.sku.name }}</td>
+                                    <td>
+                                        {{ item.sku.code }}
+                                        <!-- 详情开始 -->
+                                            <button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal_detail_{{ item.sku.id }}" style="margin-right: 5px;">详情</button>
+                                            <!-- Modal -->
+                                                <div class="modal fade" id="myModal_detail_{{ item.sku.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                         <div class="modal-header">
+                                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                            <h4 class="modal-title" id="myModalLabel">SKU详情</h4>
+                                                         </div>
+                                                        <div class="modal-body">
+                                                            <table class="table">
+                                                            <tr>
+                                                                <td rowspan="2"><img src="{% static 'media/' %}{{ item.sku.img | default:'100x75.png' }}" width="100px" height="75px"></td>
+                                                                <td><div class="help-block">所属公司：</div>{{ item.sku.company }}</td>
+                                                                <td><div class="help-block">SKU中文名：</div>{{ item.sku.name }}</td>
+                                                                <td><div class="help-block">SKU英文名：</div>{{ item.sku.name_en }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><div class="help-block">客户SKU代码：</div>{{ item.sku.code}}</td>
+                                                                <td><div class="help-block">雷欧SKU代码：</div>{{ item.sku.leo_code }}</td>
+                                                                <td><div class="help-block">海关申报码：</div>{{ item.sku.declare_code }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><div class="help-block">SKU类别：</div>{{ item.sku.get_status_display }}</td>
+                                                                <td><div class="help-block">重量(kg)：</div>{{ item.sku.weight }}</td>
+                                                                <td><div class="help-block">体积(m3)：</div>{{ item.sku.volume }}</td>
+                                                                <td><div class="help-block">申报价值(欧元)：</div>{{ item.sku.price }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><div class="help-block">品类：</div>{{ item.sku.category }}</td>
+                                                                <td><div class="help-block">长度(cm)：</div>{{ item.sku.length }}</td>
+                                                                <td><div class="help-block">宽度(cm)：</div>{{ item.sku.width }}</td>
+                                                                <td><div class="help-block">高度(cm)：</div>{{ item.sku.height }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td><div class="help-block">近三十天总销量：</div>{{ item.sku.out_recent_thirty }}</td>
+                                                                <td><div class="help-block">近三十天总入库量：</div>{{ item.sku.in_recent_thirty }}</td>
+                                                                <td><div class="help-block">近三十天日均销量：</div>{{ item.sku.sales_recent_thirty }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td colspan="4">
+                                                                    <div>
+                                                                        <div class="help-block">库存情况：</div>
+                                                                        <div>
+                                                                            <table class="table table-bordered table-hover">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <td>所属仓库</td>
+                                                                                        <td>分配库位</td>
+                                                                                        <td>正常</td>
+                                                                                        <td>待入库</td>
+                                                                                        <td>待出库</td>
+                                                                                        <td>冻结</td>
+                                                                                        <td>缺货</td>
+                                                                                        <td>其他</td>
+                                                                                        {% if user.is_staff %}
+                                                                                            <td>操作</td>
+                                                                                        {% endif %}
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                {% for sum in item.sku.count_set.all %}
+                                                                                    <tr>
+                                                                                        <td>{{ sum.depot }}</td>
+                                                                                        <td>{{ sum.unit }}</td>
+                                                                                        <td>{{ sum.normal }}</td>
+                                                                                        <td>{{ sum.preparing_in }}</td>
+                                                                                        <td>{{ sum.preparing_out }}</td>
+                                                                                        <td>{{ sum.freeze }}</td>
+                                                                                        <td>{{ sum.short }}</td>
+                                                                                        <td>{{ sum.other }}</td>
+                                                                                        {% if user.is_staff %}
+                                                                                            <td>
+                                                                                            <form action="{% url 'sku_count_edit' id=sum.id %}" method="get">
+                                                                                            <button type="submit" class="btn btn-primary btn-xs" name='edit' value="edit">编辑</button>
+                                                                                            </form>
+                                                                                            </td>
+                                                                                        {% endif %}
+                                                                                    </tr>
+                                                                                {% endfor %}
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            </table>
+
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-default" data-dismiss="modal" style="margin-right: 10px;">关闭</button>
+                                                        </div>
+                                                        </div>
+                                                    <!-- /.modal-content -->
+                                                    </div>
+                                                <!-- /.modal-dialog -->
+                                                </div>
+                                                <!-- /.modal -->
+                                            <!-- 详情结束 -->
+                                    </td>
+                                    <td>{{ item.sku.weight }}</td>
+                                    <td>{{ item.sku.volume }}</td>
+                                    <td>{{ item.amount }}</td>
+                                    <td>{{ item.check }}</td>
+                                    <td>{{ item.get_unit }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        </table>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,135 @@
+{% extends "warehouse_template.html" %}
+{% load crispy_forms_tags %}
+{% block title %}编辑退件单-{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">退单编辑</h3>
+                </div>
+                <div class="panel-body">
+                    <form method="post" action="{% url 'reject_edit' id=id %}" role="form">
+                        {{ form | crispy }}
+                        <p>退件单所包含的货物信息：</p>
+                        <p>注意：创建退件单时，如果提交了多条SKU代码相同的记录，将以最后一条记录为准。</p>
+                        <p>注意：请先选择要创建退件单的客户公司，再输入SKU，才能获得正确的提示信息。</p>
+                        {% for error in errors %}
+                            <p class="alert-danger">{{ error }}</p>
+                        {% endfor %}
+                        <table class="table table-striped table-hover" id="skulist">
+                            <thead>
+                                <tr>
+                                    <td>客户SKU代码</td>
+                                    <td>SKU名称</td>
+                                    <td>当前库存数量</td>
+                                    <td>退货数量</td>
+                                    <td>操作</td>
+                                </tr>
+                            </thead>
+                            <div class="form-group">
+                                <input type="hidden" name="id" id="id_id" value="{{ id }}">
+                            </div>
+                            <tbody id="sku_tbody">
+                            {% if data %}
+                            {% for item in data %}
+                                <tr class="tr_{{ forloop.counter }}">
+                                    <td>
+                                        <input type="text" name="sku_code_{{ forloop.counter }}" value="{{ item.sku_code }}"
+                                               required list="tip_code_{{ forloop.counter }}"
+                                               onchange="show_quantity({{ forloop.counter }})"
+                                               id="sku_code_{{ forloop.counter }}">
+                                        <datalist id="tip_code_{{ forloop.counter }}">
+                                            {% for tip in sku_code_list %}
+                                                <option value="{{ tip }}"></option>
+                                            {% endfor %}
+                                        </datalist>
+                                    </td>
+                                    <td>
+                                        <text id="sku_name_{{ forloop.counter }}">{{ item.sku_name }}</text>
+                                    </td>
+                                    <td>
+                                        <text id="sku_quantity_{{ forloop.counter }}">{{ item.quantity }}</text>
+                                    </td>
+                                    <td><input type="number" name="amount_{{ forloop.counter }}" value="{{ item.amount }}" required></td>
+                                    <td><button type="button" onclick="del_row({{ forloop.counter }})">删除</button></td>
+                                </tr>
+                            {% endfor %}
+                            {% else %}
+                                <tr class="tr_1">
+                                    <td>
+                                        <input name='sku_code_1' id="sku_code_1" type="text" required list="tip_code_1"
+                                               onchange="show_quantity(1)">
+                                        <datalist id="tip_code_1">
+                                            {% for tip in sku_code_list %}
+                                                <option value="{{ tip }}"></option>
+                                            {% endfor %}
+                                        </datalist>
+                                    </td>
+                                    <td>
+                                        <text id="sku_name_1"></text>
+                                    </td>
+                                    <td>
+                                        <text id="sku_quantity_1"></text>
+                                    </td>
+                                    <td><input name='amount_1' type="number" ></td>
+                                    <td><button type="button" onclick="del_row(1)">删除</button></td>
+                                </tr>
+                            {% endif %}
+                            </tbody>
+                        </table>
+                        <button class="btn btn-default" type="button" onclick="add_row()">增加行</button>
+                        <input type="hidden" name="back" value="{{ back}}" />
+                        <button class="btn btn-default" type="submit">提交</button>
+                        {% csrf_token %}
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+{#    #增加删除行#}
+    var row_count ={{ data|length }};
+    var sku_code_list = {{ sku_code_list|safe }};
+{#    var company_id = {{ user.company.id }}#}
+    row_count = row_count + 2;
+    function add_row() {
+        var row_template = "<tr class=tr_" + row_count + ">";
+        row_template += "<td><input name=sku_code_" + row_count + " type='text' required list='tip_code_" + row_count + "' ";
+        row_template += " id=sku_code_" + row_count + " onchange='show_quantity(" + row_count + ")'>";
+        row_template += "<datalist id='tip_code_"+ row_count + "'>";
+        for(var i=0;i<sku_code_list.length;i++){
+            row_template += "<option value='" + sku_code_list[i] + "'></option>";
+        }
+        row_template += "</datalist>";
+        row_template += "<td><text id=sku_name_" + row_count + "></text></td>";
+        row_template += "<td><text id=sku_quantity_" + row_count + "></text></td>";
+        row_template += "<td><input name=amount_" + row_count + " type='number' required>";
+        row_template += "</td><td><button type='button' onclick='del_row(" + row_count + ")'>删除</button></td></tr>";
+        $("#sku_tbody").append(row_template);
+        row_count++;
+    }
+
+    function del_row(id) {
+        $("#skulist .tr_"+id).remove();
+    }
+
+    function show_quantity(id) {
+        var select_company = document.getElementById("id_company");
+        var company_index = select_company.selectedIndex;
+        var company_id = select_company.options[company_index].value;
+        node_id = "sku_code_" + id;
+        var sku_code = document.getElementById(node_id).value;
+        $.ajax({
+            url: "http://47.94.106.105/get_sku_status",
+            data: {'sku_code':sku_code, 'company_id':company_id},
+            dataType: 'jsonp',
+            success: function (result) {
+                $("#sku_name_" + id).text(result.name);
+                $("#sku_quantity_" + id).text(result.quantity);
+            }
+        });
+    }
+    </script>
+{% endblock %}

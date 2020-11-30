@@ -1,0 +1,27 @@
+{% extends "warehouse_template.html" %}
+{% load crispy_forms_tags %}
+{% block title %}编辑账户信息-{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">用户信息编辑</h3>
+                </div>
+                <div class="panel-body">
+                    <form method="post" action="{% url 'account_profile' id=id %}" role="form">
+                        {{ form | crispy }}
+                        <button class="btn btn-default" type="submit">提交</button>
+                        {% csrf_token %}
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <style type="text/css">
+    .errorlist{
+        background-color: #f0ad4e !important;
+    }
+    </style>
+{% endblock %}

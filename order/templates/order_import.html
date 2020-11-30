@@ -1,0 +1,74 @@
+{% extends "warehouse_template.html" %}
+{% block title %}从EXCEL文件导入订单-{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">从EXCEL文件导入订单</h3>
+                </div>
+                <div class="panel-body">
+                    <form method="post" action="{% url 'order_import' %}" role="form" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <input type="hidden" name="id" id="id_id" value="{{ id }}">
+                        </div>
+                        <tr>
+                            <th>
+                                <label for="id_excel_file">请选择要导入的文件:</label>
+                            </th>
+                            <td>
+                                <input type="file" name="excel_file" required id="id_excel_file" class="form-control"
+                                       accept="application/vnd.ms-excel,
+                                       application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>
+{#                                <input type="file" name="excel_file" required id="id_excel_file" accept=".xls,.xlsx">#}
+                            </td>
+                        </tr>
+                        <tr>
+                            <div class="help-block">
+                                <p>模板格式不正确会导致导入的信息有误，导入后请检查导入的订单数据是否正确。</p>
+                                <p>请确认导入的是EXCEL文件，否则会导致错误。导入文件的模板请联系仓库管理员咨询。</p>
+                                <p>模板中SKU编码即Custom Label项目中不能含有'.'符号。</p>
+                            </div>
+                        </tr>
+                        <div><input type="submit" class="btn btn-primary" onclick="before_submit()" value="导入订单"></div>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    function before_submit() {
+        if(check_excel_enable()){
+            $("form").submit();
+        }
+    }
+
+    function check_excel_enable() {
+        if(document.getElementById("id_excel_file").value==""){
+            alert("没有选择任何文件");
+            return false;
+        }
+        var check_suffix = false;
+        var check_size = false;
+        var filename = document.getElementById("id_excel_file").value.toLowerCase().split(".");
+        var suffix = filename[filename.length-1];
+        if(suffix === "xls" || suffix === "xlsx" ){
+            check_suffix = true;
+        }else{
+            alert("请选择后缀名为xls、xlsx的Excel文件");
+            return false;
+        }
+        var img_size = document.getElementById("id_excel_file").files[0].size;
+        if(img_size<1024*1024*3){
+            check_size = true;
+        }else {
+            alert("文件尺寸过大，请选择小于3M的文件");
+            return false;
+        }
+        return (check_size && check_suffix);
+    }
+    </script>
+{% endblock %}

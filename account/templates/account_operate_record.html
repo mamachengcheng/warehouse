@@ -1,0 +1,67 @@
+{% extends "warehouse_template.html" %}
+{% block title %}用户组管理-{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            本账户的所有操作记录
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table" id="dataTables-example">
+                                    <thead>
+                                        <tr>
+                                            <th>操作员</th>
+                                            <th>行动</th>
+                                            <th>描述</th>
+                                            <th>对象</th>
+                                            <th>对象描述</th>
+                                            <th>操作时间</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for record in op %}
+                                        <tr class="{% if record.action == '1' %}success{% elif record.action == '2' %}danger{% elif record.action == '3' %}info{% endif %}">
+                                            <td>{{ record.account }}</td>
+                                            <td>{{ record.get_action_display }}</td>
+                                            <td>{{ record.description }}</td>
+                                            <td>{{ record.object_id }}</td>
+                                            <td>{{ record.object_repr }}</td>
+                                            <td>{{ record.action_time }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- /.table-responsive -->
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+        </div>
+    </div>
+{% endblock %}
+{% block sc %}
+    <script>
+    $(document).ready(function() {
+        $('#dataTables-example').DataTable({
+            "language":{
+                "lengthMenu":"每页 _MENU_ 条记录",
+                "zeroRecords":"没有找到符合条件的记录",
+                "info":"第 _PAGE_ 页（ 总共 _PAGES_ 页）",
+                "infoEmpty":"无记录",
+                "infoFiltered":"（从 _MAX_ 条记录过滤）",
+                "search":"搜索",
+                "paginate":{
+                    "previous":"上一页",
+                    "next":"下一页"
+                }
+            },
+            responsive: true,
+        });
+    });
+
+    </script>
+{% endblock %}

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>{% block title %}{% endblock %}雷欧海外仓后台管理系统</title>
+    {% load staticfiles %}
+    <!-- Bootstrap Core CSS -->
+    <link href="{% static 'SB2/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- MetisMenu CSS -->
+    <link href="{% static 'SB2/vendor/metisMenu/metisMenu.min.css' %}" rel="stylesheet">
+
+    <!-- DataTables CSS -->
+    <link href="{% static 'SB2/vendor/datatables-plugins/dataTables.bootstrap.css' %}" rel="stylesheet">
+
+    <!-- DataTables Responsive CSS -->
+    <link href="{% static 'SB2/vendor/datatables-responsive/dataTables.responsive.css' %}" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="{% static 'SB2/dist/css/sb-admin-2.css' %}" rel="stylesheet">
+
+    <!-- Morris Charts CSS -->
+    <link href="{% static 'SB2/vendor/morrisjs/morris.css' %}" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="{% static 'SB2/vendor/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+<body>
+    <div id="warpper">
+    <!-- 主页面 -->
+        <!-- 左上角标题 -->
+      <nav class="navbar navbar-default navbar-fixed-top-top navbar-expand-lg " role="navigation">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{% url 'backend:index' %}">雷欧海外仓后台管理系统 Beta</a>
+            </div>
+
+            <!-- /.navbar-header -->
+            <!-- 右上角菜单 -->
+{#            <div class="collapse navbar-collapse" id=".navbar-collapse">#}
+            <ul class="nav navbar-top-links navbar-right">
+                 <!-- /.dropdown -->
+{#                <li class="dropdown">#}
+{#                    {% if user.is_authenticated %}#}
+{#                        <span>当前用户：{{ user.username }}</span>#}
+{#                    {% else %}#}
+{#                        <span>欢迎您！请登录</span>#}
+{#                    {% endif %}#}
+{#                </li>#}
+            <li class="dropdown">
+                    <a href="{% url 'index' %}">
+                        <i class="fa fa-bank"></i> <span>网站首页</span>
+                    </a>
+
+                    <!-- /.dropdown-user -->
+                </li>
+            <li class="dropdown">
+                    <a href="{% url 'backend:index' %}">
+                        <i class="fa fa-codepen"></i> <span>后台首页</span>
+                    </a>
+
+                    <!-- /.dropdown-user -->
+                </li>
+               <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-gear fa-building"></i> <span>仓库管理</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li><a href="{% url 'sku_list' %}"><i class="fa fa-list-alt fa-fw"></i>SKU列表</a></li>
+                        {% if user.is_staff %}
+                        <li><a href="{% url 'sku_examine_list' %}"><i class="fa fa-pencil fa-fw"></i>SKU审核</a></li>
+                        <li class="divider"></li>
+                        <li><a href="{% url 'depot_list' %}"><i class="fa fa-cube fa-fw"></i>仓库设置</a></li>
+                        <li><a href="{% url 'unit_list' %}"><i class="fa fa-cubes fa-fw"></i>库位设置</a></li>
+                        <li class="divider"></li>
+                        <li><a href="{% url 'skutype_list' %}"><i class="fa fa-sitemap fa-fw"></i>SKU类别</a></li>
+                        <li><a href="{% url 'skutypefee_list' %}"><i class="fa fa-dollar fa-fw"></i>SKU类别费用</a></li>
+                        {% endif %}
+                    </ul>
+                    <!-- /.dropdown-alerts -->
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-user fa-truck"></i> <span>运单管理</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        {% if user.is_staff %}
+                        <li><a href="{% url 'transorder_check_list' %}"><i class="fa fa-retweet fa-fw"></i>到货审核</a></li>
+                        {% else %}
+                        <li><a href="{% url 'transorder_list' %}"><i class="fa fa-send-o fa-fw"></i>到货预报</a></li>
+                        {% endif %}
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-briefcase"></i> <span>订单管理</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        {% if not user.is_staff %}
+                        <li><a href="{% url 'order_list' %}"><i class="fa fa-info-circle fa-fw"></i>订单列表</a></li>
+                        <li><a href="{% url 'delivery_query_list' %}"><i class="fa fa-automobile fa-fw"></i>物流方案</a></li>
+                            <li class="divider"></li>
+                            <li><a href="{% url 'order_create' %}"><i class="fa  fa-hand-o-right fa-fw"></i>手动录入</a></li>
+                            <li><a href="{% url 'order_import' %}"><i class="fa fa-magic fa-fw"></i>Excel导入</a></li>
+                        {% else %}
+                            <li><a href="{% url 'order_list_todo' %}"><i class="fa fa-question-circle fa-fw"></i>待处理订单</a></li>
+{#                            <li><a href="{% url 'order_list_over' %}"><i class="fa fa-check-circle fa-fw"></i>已完成订单</a></li>#}
+                        {% endif %}
+{#                        <li class="divider"></li>#}
+                        <li><a href="{% url 'reject_list' %}"><i class="fa fa-times-circle fa-fw"></i>退件管理</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-bar-chart-o"></i> <span>数据统计</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li><a href="{% url 'backend:sales_query' %}"><i class="fa fa-shopping-cart fa-fw"></i>销售统计</a></li>
+                        <li><a href="{% url 'backend:storage_fee_list' %}"><i class="fa fa-refresh fa-fw"></i>每日库存体积</a></li>
+                        {% if user.is_staff %}
+                        <li><a href="{% url 'stockchange_list' %}"><i class="fa fa-database fa-fw"></i>库存变动查询</a></li>
+                        {% endif %}
+                    </ul>
+                </li>
+
+                <!-- /.dropdown -->
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-gear fa-fw"></i><span>系统设置</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        {% if user.is_staff %}
+                            <li><a href="{% url 'level_list' %}"><i class="fa fa-flag fa-fw"></i>客户等级</a></li>
+                            <li><a href="{% url 'company_list' %}"><i class="fa fa-globe fa-fw"></i>客户公司</a></li>
+                            <li><a href="{% url 'companyfee_list' %}"><i class="fa fa-euro fa-fw"></i>预付费管理</a></li>
+                            <li class="divider"></li>
+                            <li><a href="{% url 'delivery_list' %}"><i class="fa fa-fighter-jet fa-fw"></i>物流方案</a></li>
+                            <li><a href="{% url 'orderspecial_list' %}"><i class="fa fa-puzzle-piece fa-fw"></i>特殊邮编</a></li>
+                            <li><a href="{% url 'customerlevelfee_list' %}"><i class="fa fa-vimeo-square fa-fw"></i>客户等级费用</a></li>
+                            <li><a href="{% url 'storagefee_list' %}"><i class="fa fa-bitcoin fa-fw"></i>仓租费用设置</a></li>
+                            <li class="divider"></li>
+                            <li><a href="{% url 'announcement_list' %}"><i class="fa fa-envelope fa-fw"></i>公告管理</a></li>
+                            <li class="divider"></li>
+                            <li><a href="{% url 'group_list' %}"><i class="fa fa-tasks fa-fw"></i>用户组管理</a></li>
+                        {% else %}
+                            <li><a href="{% url 'companyfee_item' id=user.company.id %}"><i class="fa fa-rmb fa-fw"></i>消费记录</a></li>
+                        {% endif %}
+                        {% if perms.account.change_account %}
+                            <li><a href="{% url 'account_list' %}"><i class="fa fa-users fa-fw"></i>用户列表</a></li>
+                        {% endif %}
+
+                    </ul>
+                    <!-- /.dropdown-alerts -->
+                </li>
+                 <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-user fa-fw"></i> <span>账户信息</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li><a href="#">用户：{{ user.username }}</a></li>
+                        <li class="divider"></li>
+                        <li><a href="{% url 'account_profile' id=user.id %}"><i class="fa fa-tag fa-fw"></i>个人资料</a></li>
+                        <li><a href="{% url 'password_change' %}"><i class="fa fa-lock fa-fw"></i>修改密码</a></li>
+                        <li><a href="{% url 'account_operate_record' %}"><i class="fa fa-save fa-fw"></i>操作记录</a></li>
+                        <li class="divider"></li>
+                        <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out fa-fw"></i>退出登录</a></li>
+                    </ul>
+                    <!-- /.dropdown-alerts -->
+                </li>
+                <!-- /.dropdown -->
+{#                <li class="dropdown">#}
+{#                    <a href="{% url 'logout' %}">#}
+{#                        <i class="fa fa-sign-out fa-fw"></i> <span>退出登录</span>#}
+{#                    </a>#}
+{##}
+{#                    <!-- /.dropdown-user -->#}
+{#                </li>#}
+                <!-- /.dropdown -->
+            </ul>
+{#            </div>#}
+            <!-- /.navbar-top-links -->
+
+        </nav>
+
+
+
+        <!-- 侧边菜单栏 -->
+
+        <!-- 主操作区 -->
+        <div style="background-color: white;padding: 20px 20px;">{% block content %}{% endblock %}</div>
+        <!-- 底部 -->
+
+
+
+
+
+        <!-- jQuery -->
+        <script src="{% static 'SB2/vendor/jquery/jquery.min.js' %}"></script>
+
+        <!-- Bootstrap Core JavaScript -->
+        <script src="{% static 'SB2/vendor/bootstrap/js/bootstrap.min.js' %}"></script>
+
+        <!-- Metis Menu Plugin JavaScript -->
+        <script src="{% static 'SB2/vendor/metisMenu/metisMenu.min.js' %}"></script>
+        <!-- DataTables JavaScript -->
+        <script src="{% static 'SB2/vendor/datatables/js/jquery.dataTables.min.js' %}"></script>
+        <script src="{% static 'SB2/vendor/datatables-plugins/dataTables.bootstrap.min.js' %}"></script>
+        <script src="{% static 'SB2/vendor/datatables-responsive/dataTables.responsive.js' %}"></script>
+        <!-- Morris Charts JavaScript -->
+        <script src="{% static 'SB2/vendor/raphael/raphael.min.js' %}"></script>
+        <script src="{% static 'SB2/vendor/morrisjs/morris.min.js' %}"></script>
+        <script src="{% static 'SB2/data/morris-data.js' %}"></script>
+
+        <!-- Custom Theme JavaScript -->
+        <script src="{% static 'SB2/dist/js/sb-admin-2.js' %}"></script>
+        {% block sc %}{% endblock %}
+    </div>
+</body>
+{#<style type="text/css">#}
+{#    .navbar {#}
+{#        margin-bottom: 0;#}
+{#        background-color: #0c0c0c;#}
+{#    }#}
+{#    .navbar a{#}
+{#        color : #9d9d9d;#}
+{#    }#}
+{#</style>#}
+</html>

@@ -1,0 +1,22 @@
+{% extends "warehouse_template.html" %}
+{% load crispy_forms_tags %}
+{% block title %}编辑SKU数量-{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">SKU数量编辑</h3>
+                </div>
+                <div class="panel-body">
+                    <form method="post" action="{% url 'sku_count_edit' id=id %}" role="form">
+                        {{ form | crispy }}
+                        <input type="hidden" name="back" value="{{ back}}" />
+                        <button class="btn btn-default" type="submit">提交</button>
+                        {% csrf_token %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

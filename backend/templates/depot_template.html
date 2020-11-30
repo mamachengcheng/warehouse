@@ -1,0 +1,26 @@
+
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            数据概况
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            {% if user.is_staff %}
+                                <p>当前总客户数量：<a href="{% url 'company_list' %}">{{ depot.company_sum | default:0 }}</a>个</p>
+                                <p>所有客户预付款总额：<a href="{% url 'companyfee_list' %}">{{ depot.prepay_total | default:0 }}</a>欧元</p>
+                                <p>共有仓库管理账户：<a href="{% url 'account_list' %}" >{{ depot.accounts | default:1 }}</a>个</p>
+                            {% else %}
+                                {% if depot.prepay < 200 %}
+                                <div class="alert-danger">您的账户预存款不足200欧元，请尽快联系管理员进行充值。
+                                    <br>如果账户余额不足100欧元，将无法再进行任何操作。</div>
+                                {% endif %}
+                            <p>当前公司等级：{{ depot.level | default:'无' }}</p>
+                            <p>当前总操作员数量：{{ depot.accounts }}个</p>
+                            <p>当前库存体积：{{ depot.vol_current | default:0 }}m³</p>
+                            <p>当月出库体积：{{ depot.vol_out | default:0 }}m³</p>
+                            <p>当前预存款余额：{{ depot.prepay }}欧元</p>
+                            {% endif %}
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->

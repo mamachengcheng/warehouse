@@ -1,0 +1,28 @@
+{% extends "warehouse_template.html" %}
+{% block title %}海外仓管理后台-{% endblock %}
+{% block content %}
+    <div class="row">
+{#    第一行#}
+        <div class="col-lg-6">
+{#            第一列#}
+            {% include "todo_template.html" %}
+        </div>
+
+        <div class="col-lg-6">
+{#            第二列#}
+            {% include "announce_template.html" %}
+        </div>
+    </div>
+
+    <div class="row">
+{#    第二行#}
+        <div class="col-lg-6">
+{#            第一列#}
+            {% include 'depot_template.html' %}
+        </div>
+        <div class="col-lg-6">
+{#            第二列#}
+            {% include "record_template.html" %}
+        </div>
+    </div>
+{% endblock %}

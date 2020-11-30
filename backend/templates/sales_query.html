@@ -1,0 +1,44 @@
+{% extends "warehouse_template.html" %}
+{% load crispy_forms_tags %}
+{% block title %}销售情况查询-{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">销售情况查询</h3>
+                </div>
+                <div class="panel-body">
+
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">查询指定时间段内SKU的销量情况</h3>
+                        </div>
+                    <div class="panel-body">
+                        <form method="get" action="{% url 'backend:query_time_delta' %}">
+                        {{ time_form | crispy }}
+                        <input type="submit" class="btn btn-primary" value="查询">
+                        </form>
+                    </div>
+                    </div>
+
+                    <div class="panel panel-danger">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">查询低库存预警SKU的情况</h3>
+                        </div>
+                    <div class="panel-body">
+                        <form method="get" action="{% url 'backend:query_low_stock' %}">
+                        {{ low_form | crispy }}
+                        <input type="submit" class="btn btn-primary" value="查询">
+                        </form>
+                    </div>
+                    </div>
+
+                </div>
+                <div class="panel-footer">
+                    销售情况查询，SKU指定时间区间的销量情况以及低库存警报查询
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

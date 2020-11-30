@@ -1,0 +1,100 @@
+{% extends "warehouse_template.html" %}
+{% block title %}订单处理-{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">订单信息</h3>
+                </div>
+                <div class="panel-body">
+                    <div>订单数据库唯一id：{{ item.id }}</div>
+                    <div>订单创建时间：{{ item.create_time }}</div>
+                    <div>订单状态：{{ item.get_status_display }}</div>
+                    <div>所属公司：{{ item.company }}</div>
+                    <div>客户销售平台订单号：{{ item.sales_record_number }}</div>
+                    <div>订单编号：{{ item.order_code }}</div>
+                    <div>客户平台消费者id：{{ item.user_id }}</div>
+                    <div>消费者姓名：{{ item.buyer_full_name }}</div>
+                    <div>消费者联系电话：{{ item.buyer_phone_number }}</div>
+                    <div>消费者电子邮箱：{{ item.buyer_email }}</div>
+                    <div>消费者地址1：{{ item.buyer_address1 }}</div>
+                    <div>消费者地址2：{{ item.buyer_address2 }}</div>
+                    <div>Town/City：{{ item.buyer_city }}</div>
+                    <div>County：{{ item.buyer_county }}</div>
+                    <div>消费者邮编：{{ item.buyer_postcode }}</div>
+                    <div>Country：{{ item.buyer_country }}</div>
+                    <div>所包含的货物：</div>
+                    <div>
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <td>SKU代码</td>
+                            <td>SKU名称</td>
+                            <td>数量</td>
+                        </tr>
+                        </thead>
+                        {% for s in item.ordercontain_set.all %}
+                            <tr>
+                                <td>{{ s.sku.code }}</td>
+                                <td>{{ s.sku.name }}</td>
+                                <td>{{ s.amount }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    订单处理，可对列表中显示的内容进行操作
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">订单正常处理</h3>
+            </div>
+            <div class="panel-body">
+                <form method="post" action="{% url 'order_deal' id=item.id %}">{% csrf_token %}
+                <div>订单信息无误，请录入物流单号并最终核实包裹重量</div>
+                <div>选择的物流商：{{ item.delivery_service }}</div>
+                <div>
+                    <label>*物流单号：</label>
+                    <input type="text" name="delivery_code" class="form-control" required>
+                </div>
+                <div>自动计算重量为：{{ item.total_weight }}kg</div>
+                <div>预估运费：{{ item.delivery_fee }}欧元</div>
+                <div>
+                    <label>*包裹最终重量(单位：kg千克)：</label>
+                    <input type="number" step="0.01" name="final_weight" value="{{ item.total_weight }}" class="form-control" required>
+                </div>
+                <div>该订单操作费为：{{ item.operation_fee }}欧元</div>
+                <div>订单处理后，操作费将从客户账户扣除。</div>
+                    <input type="hidden" name="back" value="{{ back }}" />
+                    <input type="hidden" name="status" value="{{ status }}" />
+                <input type="submit" class="btn btn-primary" value="确认处理订单">
+                </form>
+            </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">问题单</h3>
+            </div>
+            <div class="panel-body">
+                <form method="post" action="{% url 'order_trouble' id=item.id %}">{% csrf_token %}
+                    <label class="col-form-label">订单包含以下问题：</label>
+                    <div><textarea rows="5" cols="60" name="trouble" class="form-control"></textarea></div>
+                    <div class="help-block">请输入订单处理意见</div>
+                    <input type="hidden" name="back" value="{{ back }}" />
+                    <input type="hidden" name="status" value="{{ status }}" />
+                    <div><input type="submit" class="btn btn-primary" value="转为问题单"></div>
+                </form>
+            </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

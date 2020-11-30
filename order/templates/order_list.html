@@ -1,0 +1,510 @@
+{% extends "warehouse_template.html" %}
+{% load staticfiles %}
+{% block title %}订单列表-{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">订单列表</h3>
+                </div>
+                {% if messages %}
+                    <div id="messages" class="messages">
+                        <div class="alert alert-success">
+                            {% for message in messages %}
+                            <div{% if message.tag %} class="{{ message.tags }}"{% endif %} >{{ message }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+                    {% if result %}
+                    <p>本次订单导入的结果为：
+                        <p>总处理订单：{{ result.total }}</p>
+                        <p>成功：{{ result.success }} </p>
+                        <p>失败：{{ result.error }}</p>
+                        <p>警告：{{ result.warn }}</p>
+                        <p>合并订单：{{ result.merge }}</p>
+                        {% for e in result.error_list %}
+                            <p>错误信息{{ forloop.counter }}:{{ e }}</p>
+                        {% endfor %}
+                    </p>
+                    {% endif %}
+
+                <div class="panel-body">
+                    {% if not user.is_staff %}
+                    <span style="display: flex;flex-direction: row">
+                        <form action="{% url 'order_create' %}" method="get">
+                        <button class="btn btn-primary" type="submit" style="margin-bottom:10px;margin-right: 10px; ">手动录入新订单</button>
+                        </form>
+                        <form action="{% url 'order_import' %}" method="get">
+                        <button class="btn btn-primary" type="submit" style="margin-bottom:10px;margin-right: 10px; ">从Excel文件导入订单</button>
+                        </form>
+
+                       <button class="btn btn-primary" onclick="merge_orders()" style="margin-bottom:10px;margin-right: 10px; ">合并所选订单</button>
+                        <form action="{% url 'order_list_status' %}" method="get">
+                        <button class="btn btn-primary" type="submit" style="margin-bottom:10px;margin-right: 10px; ">查看指定状态的订单</button>
+                        {{ select_status }}
+                        </form>
+
+                    </span>
+                        <div>
+                            针对所选订单要执行的批量操作类型：
+                            <select name="batch_operation" id="id_batch_operation">
+                                <option value="1" selected>提交订单</option>
+                                <option value="2">删除订单</option>
+                            </select>
+
+                             <button type="submit" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#batch_orders">批量操作</button>
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="batch_orders" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                             <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                <h4 class="modal-title" id="myModalLabel">批量操作</h4>
+                                             </div>
+                                            <div class="modal-body">
+                                                <p>将要执行批量操作</p>
+                                                <p>以下操作将不可逆的执行。</p>
+                                                <p>请再次确认。</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <span style="display: flex;flex-direction: row;">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal" style="margin-right: 10px;">取消</button>
+                                                <button class="btn btn-default" onclick="batch_orders_client()" style="margin-right: 10px; ">执行</button>
+                                                </span>
+                                            </div>
+                                            </div>
+                                        <!-- /.modal-content -->
+                                        </div>
+                                    <!-- /.modal-dialog -->
+                                    </div>
+                                    <!-- /.modal -->
+                        </div>
+                        <div>
+                            <form action="{% url 'order_list' %}" method="get">
+                                <input type="text" name="search" value="{{ search|default:''}}">
+                                <button class="btn btn-primary" type="submit" style="margin-bottom:10px;margin-right: 10px; ">模糊查询</button>
+                                (说明：支持模糊查询客户平台订单号、雷欧订单号及物流单号)
+                            </form>
+                        </div>
+                        <div>
+                            <form action="{% url 'order_export' %}" method="get">
+                                <button class="btn btn-primary" type="submit" style="margin-bottom:10px;margin-right: 10px; ">导出订单</button>
+                            </form>
+                        </div>
+                    {% endif %}
+                    <table width="100%" class="table table-striped table-hover" id="dataTables-example">
+                        <thead>
+                            <tr>
+                                <td><input type="checkbox" check_all=".eachcheckbox"></td>
+                                <td>订单详情</td>
+                                <td>订单所包含的货物</td>
+                                <td>物流信息</td>
+                                <td>订单状态</td>
+                                {% if user.is_staff %}<td>所属公司</td>{% endif %}
+                                <td>操作</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in contacts %}
+                            <tr class="odd gradeX">
+                                <td>
+                                    <input type="checkbox" name="selected" class='eachcheckbox' onclick="check_click()" value="{{ item.id }}">
+                                </td>
+                                <td>
+                                    <div class="help-block">
+                                        <div>订单数据库唯一id：{{ item.id }}</div>
+                                        <div>订单创建时间：{{ item.create_time }}</div>
+                                        <div>客户销售平台订单号：{{ item.sales_record_number }}</div>
+                                        <div>订单编号：{{ item.order_code }}</div>
+                                        <div>客户平台消费者id：{{ item.user_id }}</div>
+                                        <div>消费者姓名：{{ item.buyer_full_name }}</div>
+                                        <div>消费者联系电话：{{ item.buyer_phone_number }}</div>
+                                        <div>消费者电子邮箱：{{ item.buyer_email }}</div>
+                                        <div>消费者地址1：{{ item.buyer_address1 }}</div>
+                                        <div>消费者地址2：{{ item.buyer_address2 }}</div>
+                                        <div>Town/City：{{ item.buyer_city }}</div>
+                                        <div>County：{{ item.buyer_county }}</div>
+                                        <div>消费者邮编：{{ item.buyer_postcode }}</div>
+                                        <div>Country：{{ item.buyer_country }}</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <td>SKU代码</td>
+                                        <td>SKU名称</td>
+                                        <td>数量</td>
+                                    </tr>
+                                    </thead>
+                                    {% for s in item.ordercontain_set.all %}
+                                        <tr>
+                                            <td>
+                                                {{ s.sku.code }}
+                                                <!-- 详情开始 -->
+                                            <button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal_detail_{{ s.sku.id }}" style="margin-right: 5px;">详情</button>
+                                            <!-- Modal -->
+                                                <div class="modal fade" id="myModal_detail_{{ s.sku.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                         <div class="modal-header">
+                                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                            <h4 class="modal-title" id="myModalLabel">SKU详情</h4>
+                                                         </div>
+                                                        <div class="modal-body">
+                                                            <table class="table">
+                                                            <tr>
+                                                                <td rowspan="2"><img src="{% static 'media/' %}{{ s.sku.img | default:'100x75.png' }}" width="100px" height="75px"></td>
+                                                                <td><div class="help-block">所属公司：</div>{{ s.sku.company }}</td>
+                                                                <td><div class="help-block">SKU中文名：</div>{{ s.sku.name }}</td>
+                                                                <td><div class="help-block">SKU英文名：</div>{{ s.sku.name_en }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><div class="help-block">客户SKU代码：</div>{{ s.sku.code}}</td>
+                                                                <td><div class="help-block">雷欧SKU代码：</div>{{ s.sku.leo_code }}</td>
+                                                                <td><div class="help-block">海关申报码：</div>{{ s.sku.declare_code }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><div class="help-block">SKU类别：</div>{{ s.sku.get_status_display }}</td>
+                                                                <td><div class="help-block">重量(kg)：</div>{{ s.sku.weight }}</td>
+                                                                <td><div class="help-block">体积(m3)：</div>{{ s.sku.volume }}</td>
+                                                                <td><div class="help-block">申报价值(欧元)：</div>{{ s.sku.price }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><div class="help-block">品类：</div>{{ s.sku.category }}</td>
+                                                                <td><div class="help-block">长度(cm)：</div>{{ s.sku.length }}</td>
+                                                                <td><div class="help-block">宽度(cm)：</div>{{ s.sku.width }}</td>
+                                                                <td><div class="help-block">高度(cm)：</div>{{ s.sku.height }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td><div class="help-block">近三十天总销量：</div>{{ s.sku.out_recent_thirty }}</td>
+                                                                <td><div class="help-block">近三十天总入库量：</div>{{ s.sku.in_recent_thirty }}</td>
+                                                                <td><div class="help-block">近三十天日均销量：</div>{{ s.sku.sales_recent_thirty }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td colspan="4">
+                                                                    <div>
+                                                                        <div class="help-block">库存情况：</div>
+                                                                        <div>
+                                                                            <table class="table table-bordered table-hover">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <td>所属仓库</td>
+                                                                                        <td>分配库位</td>
+                                                                                        <td>正常</td>
+                                                                                        <td>待入库</td>
+                                                                                        <td>待出库</td>
+                                                                                        <td>冻结</td>
+                                                                                        <td>缺货</td>
+                                                                                        <td>其他</td>
+                                                                                        {% if user.is_staff %}
+                                                                                            <td>操作</td>
+                                                                                        {% endif %}
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                {% for sum in s.sku.count_set.all %}
+                                                                                    <tr>
+                                                                                        <td>{{ sum.depot }}</td>
+                                                                                        <td>{{ sum.unit }}</td>
+                                                                                        <td>{{ sum.normal }}</td>
+                                                                                        <td>{{ sum.preparing_in }}</td>
+                                                                                        <td>{{ sum.preparing_out }}</td>
+                                                                                        <td>{{ sum.freeze }}</td>
+                                                                                        <td>{{ sum.short }}</td>
+                                                                                        <td>{{ sum.other }}</td>
+                                                                                        {% if user.is_staff %}
+                                                                                            <td>
+                                                                                            <form action="{% url 'sku_count_edit' id=sum.id %}" method="get">
+                                                                                            <button type="submit" class="btn btn-primary btn-xs" name='edit' value="edit">编辑</button>
+                                                                                            </form>
+                                                                                            </td>
+                                                                                        {% endif %}
+                                                                                    </tr>
+                                                                                {% endfor %}
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            </table>
+
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-default" data-dismiss="modal" style="margin-right: 10px;">关闭</button>
+                                                        </div>
+                                                        </div>
+                                                    <!-- /.modal-content -->
+                                                    </div>
+                                                <!-- /.modal-dialog -->
+                                                </div>
+                                                <!-- /.modal -->
+                                            <!-- 详情结束 -->
+                                            </td>
+                                            <td>{{ s.sku.name }}</td>
+                                            <td>{{ s.amount }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </table>
+                                </td>
+                                <td>
+                                    <div>选择的物流商：{{ item.delivery_service }}</div>
+                                    <div>物流单号：{{ item.delivery_code }}</div>
+                                    <div>订单货物重量：{{ item.total_weight }}kg</div>
+                                    <div>预估运费：{{ item.delivery_fee }}欧元</div>
+                                    {% if item.final_weight > 0 %}
+                                    <div>包裹称重：{{ item.final_weight }}kg</div>
+                                    {% endif %}
+                                    {% if item.final_delivery_fee > 0 %}
+                                    <div>最终运费：{{ item.final_delivery_fee }}欧元</div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <p>{{ item.get_status_display }}</p>
+                                    {% if item.buyer_postcode in special_postcode %}
+                                        <p>
+                                            <strong>客户邮编：{{ item.buyer_postcode }}，属于偏远地区。
+                                            具体运费请联系管理员。</strong>
+                                        </p>
+                                    {% endif %}
+                                    {% if item.ordercomment_set.last %}
+                                    <p>问题说明：{{ item.ordercomment_set.last.content }}</p>
+                                    {% endif %}
+                                    {% if item.can_merge %}
+                                        <p>{{ item.can_merge | safe }}</p>
+                                    {% endif %}
+                                </td>
+                                {% if user.is_staff %}<td>{{ item.company }}</td>{% endif %}
+                                <td class="center">
+{#                                        <a href="{% url 'order_print' %}">打印</a>#}
+                                        {% if item.status == '1' or item.status == '6' %}
+                                            <span style="display: flex;flex-direction: row;">
+                                            <form action="{% url 'order_edit' id=item.id %}" method="get">
+                                                <input type="hidden" name="status" value="{{ status }}" />
+                                            <button type="submit" class="btn btn-primary btn-xs" >编辑</button>
+                                            </form>
+
+                                            <button type="submit" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal_del_{{ item.id }}">删除</button>
+                                            <!-- Modal -->
+                                            <div class="modal fade" id="myModal_del_{{ item.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                     <div class="modal-header">
+                                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                        <h4 class="modal-title" id="myModalLabel">删除订单</h4>
+                                                     </div>
+                                                    <div class="modal-body">
+                                                        <p>您是否确认删除订单？</p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <span style="display: flex;flex-direction: row;">
+                                                        <button type="button" class="btn btn-default" data-dismiss="modal" style="margin-right: 10px;">取消</button>
+                                                        <form action="{% url 'order_del' id=item.id  %}" method="post">{% csrf_token %}
+                                                            <input type="hidden" name="status" value="{{ status }}" />
+                                                        <input type="submit" class="btn btn-primary" style="margin-right: 10px;" value="确认删除">
+                                                        </form>
+                                                        </span>
+                                                    </div>
+                                                    </div>
+                                                <!-- /.modal-content -->
+                                                </div>
+                                            <!-- /.modal-dialog -->
+                                            </div>
+                                            <!-- /.modal -->
+
+                                            <form action="{% url 'order_commit' id=item.id %}" method="post">{% csrf_token %}
+                                            <button type="submit" class="btn btn-primary btn-xs" >提交订单</button>
+                                            </form>
+                                            </span>
+{#                                        {% elif item.status == '6' %}#}
+{#                                            <span style="display: flex;flex-direction: row;">#}
+{#                                            <form action="{% url 'order_edit' id=item.id %}" method="get">#}
+{#                                            <button type="submit" class="btn btn-primary btn-xs" name='edit' value="edit">编辑</button>#}
+{#                                            </form>#}
+{#                                             <form action="{% url 'order_commit' id=item.id %}" method="post">{% csrf_token %}#}
+{#                                            <button type="submit" class="btn btn-primary btn-xs" >提交订单</button>#}
+{#                                            </form>#}
+{#                                            </span>#}
+                                        {% elif item.status == '2' and user.is_staff %}
+                                            <form action="{% url 'order_deal' id=item.id  %}" method="get">
+                                            <button type="submit" class="btn btn-primary btn-xs" >处理订单</button>
+                                            </form>
+                                        {% elif item.status == '3' and user.is_staff %}
+                                            <form action="{% url 'order_out' id=item.id  %}" method="get">
+                                            <button type="submit" class="btn btn-primary btn-xs" >订单出库</button>
+                                            </form>
+                                         {% elif item.status == '4' and user.is_staff %}
+{#                                            <form action="{% url 'order_over' id=item.id  %}" method="get">#}
+                                            <button type="submit" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal_out_{{ item.id }}">订单完结</button>
+{#                                            </form>#}
+                                            <!-- Modal -->
+                                            <div class="modal fade" id="myModal_out_{{ item.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                     <div class="modal-header">
+                                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                        <h4 class="modal-title" id="myModalLabel">订单完结</h4>
+                                                     </div>
+                                                    <div class="modal-body">
+                                                        <p>您是否确认订单完结？</p>
+                                                        <p>确认顾客已收到货物，已出库数量将清除。</p>
+                                                        <p>订单完结后将不可再进行任何操作。</p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <span style="display: flex;flex-direction: row;">
+                                                        <button type="button" class="btn btn-default" data-dismiss="modal" style="margin-right: 10px;">取消</button>
+                                                        <form action="{% url 'order_over' id=item.id  %}" method="post">{% csrf_token %}
+                                                        <input type="submit" class="btn btn-primary" style="margin-right: 10px;" value="确认完结">
+                                                        </form>
+                                                        </span>
+                                                    </div>
+                                                    </div>
+                                                <!-- /.modal-content -->
+                                                </div>
+                                            <!-- /.modal-dialog -->
+                                            </div>
+                                            <!-- /.modal -->
+                                        {% endif %}
+
+                                    </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="row">
+                        <div class="col-md-4 col-md-offset-4">
+                            {% if contacts.has_previous %}
+                                <a href="?page=1&search={{ search }}"><button class="btn btn-default">&laquo; 第一页</button></a>
+                                <a href="?page={{ contacts.previous_page_number }}&search={{ search }}"><button class="btn btn-default">上一页</button></a>
+                            {% endif %}
+
+                            <span class="current">
+                                第{{ contacts.number }}页  共{{ contacts.paginator.num_pages }}页
+                            </span>
+
+                            {% if contacts.has_next %}
+                                <a href="?page={{ contacts.next_page_number }}&search={{ search }}"><button class="btn btn-default">下一页</button></a>
+                                <a href="?page={{ contacts.paginator.num_pages }}&search={{ search }}"><button class="btn btn-default">最后一页 &raquo;</button></a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <!-- /.panel-body -->
+                <div class="panel-footer">
+                    订单列表，可对列表中显示的内容进行操作
+                </div>
+            </div>
+         <!-- /.panel -->
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            {% include "record_template.html" %}
+        </div>
+        <div class="col-lg-4">
+            <div class="panel panel-info">
+                <div class="panel-heading">操作说明</div>
+                <div class="panel-body">
+                    <p class="lead">订单相关操作说明</p>
+                    <p>等级id仅为数据库记录号，没有实际意义，可以忽略不显示，主要为对应操作记录。</p>
+                    <p>除SKU外其他订单信息全部相同未提交订单才可以进行合并。</p>
+                    <p></p>
+                </div>
+            </div>
+        </div>
+     </div>
+{% endblock %}
+{% block sc %}
+    <script>
+{#    $(document).ready(function() {#}
+{#        $('#dataTables-example').DataTable({#}
+{#            "language":{#}
+{#                "lengthMenu":"每页 _MENU_ 条记录",#}
+{#                "zeroRecords":"没有找到符合条件的记录",#}
+{#                "info":"第 _PAGE_ 页（ 总共 _PAGES_ 页）",#}
+{#                "infoEmpty":"无记录",#}
+{#                "infoFiltered":"（从 _MAX_ 条记录过滤）",#}
+{#                "search":"搜索",#}
+{#                "paginate":{#}
+{#                    "previous":"上一页",#}
+{#                    "next":"下一页"#}
+{#                }#}
+{#            },#}
+{#            responsive: true,#}
+{#            "deferRender": true,#}
+{#        });#}
+{#    });#}
+
+    $(':checkbox[check_all]').click(function(){
+        var target = $(this).attr('check_all');
+        if ($(this).prop('checked')){
+            $(target).prop('checked', true);
+        }else{
+            $(target).prop('checked', false);
+        }
+    });
+
+    function merge_orders(){
+        var all_selected = new Array();
+        $('.eachcheckbox').each(function(){
+            if ($(this).prop('checked')){
+               all_selected.push($(this).val());
+            }
+        });
+{#        $.get("/download_orders/",{data:all_selected});#}
+        if(all_selected.length==0){
+            alert("您没有选择任何订单");
+        }else if(all_selected.length==1){
+            alert("您只选择了一个订单");
+        }else{
+            var form = $("<form>");
+            form.attr("style", "display:none");
+            form.attr("method", "get");
+            form.attr("action", "/merge_orders/");
+            var input1 = $("<input>");
+            input1.attr("type", "hidden");
+            input1.attr("name", "data");
+            input1.attr("value", all_selected);
+            $("body").append(form);
+            form.append(input1);
+            form.submit();
+        }
+    };
+    
+    function batch_orders_client() {
+        var all_selected = new Array();
+        var selected_operation;
+        $('.eachcheckbox').each(function(){
+            if ($(this).prop('checked')){
+               all_selected.push($(this).val());
+            }
+        });
+        if(all_selected.length==0){
+            alert("您没有选择任何订单");
+        }else {
+            selected_operation = $('#id_batch_operation').val();
+            var form = $("<form>");
+            form.attr("style", "display:none");
+            form.attr("method", "get");
+            form.attr("action", "/batch_orders_client/");
+            var input1 = $("<input>");
+            input1.attr("type", "hidden");
+            input1.attr("name", "data");
+            input1.attr("value", all_selected);
+            var input2 = $("<input>");
+            input2.attr("type", "hidden");
+            input2.attr("name", "operate");
+            input2.attr("value", selected_operation);
+            $("body").append(form);
+            form.append(input1);
+            form.append(input2);
+            form.submit();
+        }
+    }
+    </script>
+{% endblock %}
